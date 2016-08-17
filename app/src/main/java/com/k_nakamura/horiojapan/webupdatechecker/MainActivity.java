@@ -20,11 +20,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_html_source_view);
 
-        tv_hash = (TextView)findViewById(R.id.hash);
-        tv_html = (TextView)findViewById(R.id.html);
-        btn_gethtml = (Button)findViewById(R.id.get_button);
+        findViews();
 
         shPref = getSharedPreferences("shPref",MODE_PRIVATE);
         tv_html.setText(shPref.getString("html",""));
@@ -46,5 +44,10 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    protected void findViews(){
+        tv_hash = (TextView)findViewById(R.id.hash);
+        tv_html = (TextView)findViewById(R.id.html);
+        btn_gethtml = (Button)findViewById(R.id.get_button);
+    }
 
 }
