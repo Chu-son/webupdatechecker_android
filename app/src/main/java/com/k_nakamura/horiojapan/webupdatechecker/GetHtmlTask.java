@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -73,6 +74,7 @@ public class GetHtmlTask
                 // 1行ずつテキストを読み込む
                 while((line = bufReader.readLine()) != null) {
                     result.append(line);
+                    result.append("\n");
                 }
                 bufReader.close();
                 inReader.close();
@@ -97,8 +99,11 @@ public class GetHtmlTask
     @Override
     protected void onPostExecute(String result) {
         String diff;
-        result = getCombinedStr(splitHtmlTags(result));
-        preHtml = getCombinedStr(splitHtmlTags(preHtml));
+        //result = getCombinedStr(splitHtmlTags(result));
+        //preHtml = getCombinedStr(splitHtmlTags(preHtml));
+
+        result = getTrimStr(result);
+        preHtml = getTrimStr(preHtml);
 
         if(!result.equals(preHtml)) {
             diff = getUpdatedLines(preHtml, result);
@@ -133,12 +138,30 @@ public class GetHtmlTask
 
         Iterator it = hash_A.iterator();
         StringBuilder sb = new StringBuilder();
+        int count = 0;
         while(it.hasNext())
         {
-            sb.append(it.next()+"\n");
+            String s = (String)it.next();
+            if(isSkipStr(s))
+            {
+                count++;
+                continue;
+            }
+
+            sb.append(s+"\n");
         }
+        sb.append("Skip " + count + " rows\n");
 
         return sb.toString();
+    }
+    protected boolean isSkipStr(String str)
+    {
+        String[] skipstrs = {"ima="};
+        for(String s:skipstrs)
+        {
+            if(str.indexOf(s) > -1) return true;
+        }
+        return false;
     }
 
     protected HashSet<String> getHashSet(String str) {
@@ -163,6 +186,17 @@ public class GetHtmlTask
     protected String getCombinedStr(String[] str_list)
     {
         StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < str_list.length ; i++)
+        {
+            if(str_list[i].trim().isEmpty()) continue;
+            sb.append(str_list[i].trim()+"\n");
+        }
+        return sb.toString();
+    }
+    protected String getTrimStr(String str)
+    {
+        StringBuilder sb = new StringBuilder();
+        String[] str_list = str.split("\n");
         for(int i = 0; i < str_list.length ; i++)
         {
             if(str_list[i].trim().isEmpty()) continue;
