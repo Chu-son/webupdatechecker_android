@@ -106,7 +106,7 @@ public class GetHtmlTask
         preHtml = getTrimStr(preHtml);
 
         if(!result.equals(preHtml)) {
-            diff = getUpdatedLines(preHtml, result);
+            diff = getUpdatedLines(result, preHtml);
         }
         else diff = "";
         tv_hash.setText(diff);
@@ -142,7 +142,7 @@ public class GetHtmlTask
         while(it.hasNext())
         {
             String s = (String)it.next();
-            if(isSkipStr(s))
+            if(isIgnoreStr(s))
             {
                 count++;
                 continue;
@@ -150,14 +150,14 @@ public class GetHtmlTask
 
             sb.append(s+"\n");
         }
-        sb.append("Skip " + count + " rows\n");
+        sb.append("Ignore " + count + " rows\n");
 
         return sb.toString();
     }
-    protected boolean isSkipStr(String str)
+    protected boolean isIgnoreStr(String str)
     {
-        String[] skipstrs = {"ima="};
-        for(String s:skipstrs)
+        String[] ignorestrs = {"ima="};
+        for(String s:ignorestrs)
         {
             if(str.indexOf(s) > -1) return true;
         }
