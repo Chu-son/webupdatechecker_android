@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -33,17 +34,17 @@ public class GetHtmlTask
 
     private String preHtml;
 
-    SharedPreferences shPref;
+    private CheckListData clData;
 
-    public GetHtmlTask(TextView tv_html, TextView tv_hash, Button getButton, SharedPreferences shPref)
+    public GetHtmlTask(TextView tv_html, TextView tv_hash, Button getButton, CheckListData clData)
     {
         super();
         this.tv_html = tv_html;
         this.tv_hash = tv_hash;
         this.btn_get = getButton;
+        this.clData = clData;
 
-        this.shPref = shPref;
-        preHtml = shPref.getString("html","");
+        preHtml = clData.getLastHtml();
     }
 
     @Override
@@ -112,9 +113,9 @@ public class GetHtmlTask
         tv_hash.setText(diff);
         tv_html.setText(result);
 
-        SharedPreferences.Editor e = shPref.edit();
-        e.putString("html", result);
-        e.apply();
+        clData.setLastHtml(result);
+        Date dateNow = new Date();
+        clData.setLastupdate(dateNow.toLocaleString());
 
         btn_get.setText("GET");
         btn_get.setEnabled(true);

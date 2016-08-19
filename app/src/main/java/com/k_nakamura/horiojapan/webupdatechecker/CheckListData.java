@@ -14,14 +14,16 @@ public class CheckListData
     protected String url;
     protected String lastupdate;
     protected String lastHtml;
+    protected String ignoreWards;
 
-    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml)
+    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml, String ignoreWards)
     {
         this.id = id;
         this.title = title;
         this.url = url;
         this.lastupdate = lastupdate;
         this.lastHtml = lastHtml;
+        this.ignoreWards = ignoreWards;
     }
 
     public int getId() {
@@ -62,5 +64,13 @@ public class CheckListData
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getIgnoreWards() {
+        return ignoreWards;
+    }
+
+    public void setIgnoreWards(String ignoreWards) {
+        this.ignoreWards = ignoreWards;
     }
 }

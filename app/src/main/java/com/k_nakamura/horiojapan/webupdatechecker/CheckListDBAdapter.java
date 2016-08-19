@@ -19,6 +19,7 @@ public class CheckListDBAdapter {
     public static final String COL_URL = "URL";
     public static final String COL_LASTHTML = "lasthtml";
     public static final String COL_LASTUPDATE = "lastupdate";
+    public static final String COL_IGNOREWARDS = "ignorewards";
 
     protected final Context context;
 
@@ -45,7 +46,8 @@ public class CheckListDBAdapter {
                             + COL_TITLE + " TEXT NOT NULL,"
                             + COL_LASTUPDATE + " TEXT NOT NULL,"
                             + COL_URL + " TEXT NOT NULL,"
-                            + COL_LASTHTML + " TEXT NOT NULL);"
+                            + COL_LASTHTML + " TEXT NOT NULL,"
+                            + COL_IGNOREWARDS + " TEXT NOT NULL);"
             );
         }
 
@@ -85,6 +87,7 @@ public class CheckListDBAdapter {
         values.put(COL_LASTUPDATE, checkListData.getLastupdate());
         values.put(COL_TITLE,checkListData.getTitle());
         values.put(COL_URL,checkListData.getUrl());
+        values.put(COL_IGNOREWARDS,checkListData.getIgnoreWards());
         db.insertOrThrow(TABLE_NAME, null, values);
     }
 
@@ -95,6 +98,7 @@ public class CheckListDBAdapter {
         values.put(COL_LASTUPDATE, checkListData.getLastupdate());
         values.put(COL_TITLE,checkListData.getTitle());
         values.put(COL_URL,checkListData.getUrl());
+        values.put(COL_IGNOREWARDS,checkListData.getIgnoreWards());
         db.update(TABLE_NAME, values,COL_ID + "=?", new String[]{""+ checkListData.getId()});
     }
 }

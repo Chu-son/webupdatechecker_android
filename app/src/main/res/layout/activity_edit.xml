@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:id="@+id/editTitleTextView"
+            android:layout_weight="1"
+            android:singleLine="false" />
+        <EditText
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/editTitleEditText"
+            android:layout_width="match_parent"
+            android:inputType="textMultiLine">
+            <requestFocus/>
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="URL"
+            android:id="@+id/editURLTextView"
+            android:layout_weight="1" />
+        <EditText
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/editURLEditText"
+            android:layout_width="match_parent"
+            android:inputType="textMultiLine"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ignore wards"
+            android:id="@+id/editIgnoreWardsTextView"
+            android:layout_weight="1" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editIgnoreWardsLinearLayout">
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:id="@+id/addIgnoreWards"
+            android:layout_gravity="right"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+</ScrollView>
+</LinearLayout>
