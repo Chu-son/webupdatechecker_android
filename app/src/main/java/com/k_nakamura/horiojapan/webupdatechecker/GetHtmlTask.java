@@ -28,22 +28,18 @@ import java.util.regex.Pattern;
 public class GetHtmlTask
         extends AsyncTask<URL, Void, String>
 {
-    private TextView tv_html;
-    private TextView tv_hash;
-    private Button btn_get;
-
     private String preHtml;
+    private ViewContainer viewContainer;
 
     private CheckListData clData;
 
-    public GetHtmlTask(TextView tv_html, TextView tv_hash, Button getButton, CheckListData clData)
+    public GetHtmlTask(ViewContainer viewContainer, CheckListData clData)
     {
         super();
-        this.tv_html = tv_html;
-        this.tv_hash = tv_hash;
-        this.btn_get = getButton;
+        this.viewContainer = viewContainer;
         this.clData = clData;
 
+        viewContainer.flipCheckButtonText();
         preHtml = clData.getLastHtml();
     }
 
@@ -100,6 +96,7 @@ public class GetHtmlTask
     @Override
     protected void onPostExecute(String result) {
         String diff;
+        String isUpdateStr;
         //result = getCombinedStr(splitHtmlTags(result));
         //preHtml = getCombinedStr(splitHtmlTags(preHtml));
 
@@ -109,19 +106,53 @@ public class GetHtmlTask
         if(!result.equals(preHtml)) {
             diff = getUpdatedLines(result, preHtml);
         }
-        else diff = "";
-        tv_hash.setText(diff);
-        tv_html.setText(result);
+        else
+        {
+            diff = "";
+        }
+        viewContainer.setDiffText(diff);
+        viewContainer.setHtmlText(result);
+        viewContainer.setIsUpdateText(clData.getIsUpdateText());
+        viewContainer.setLastUpdateTextNow();
 
         clData.setLastHtml(result);
         Date dateNow = new Date();
         clData.setLastupdate(dateNow.toLocaleString());
 
-        btn_get.setText("GET");
-        btn_get.setEnabled(true);
+        viewContainer.flipCheckButtonText();
     }
 
     protected String getUpdatedLines(String str_A, String str_B) {
+        String[] str_A_array = str_A.split("\n");
+        String[] str_B_array = str_B.split("\n");
+
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
+        for(int i = 0; i < str_A_array.length ;i++)
+        {
+            if(i == str_A_array.length || i == str_B_array.length)break;
+            if(!str_A_array[i].equals(str_B_array[i]))
+            {
+                if(isIgnoreStr(str_A_array[i]))
+                {
+                    count++;
+                    continue;
+                }
+                clData.setIsUpdate(true);
+
+                sb.append(str_B_array[i]);
+                sb.append("\n");
+                sb.append("=> ");
+                sb.append(str_A_array[i]);
+                sb.append("\n");
+            }
+        }
+        sb.append("Ignore " + count + " rows\n");
+        sb.append("Diff " + (str_B_array.length-str_A_array.length) + " rows\n");
+        return sb.toString();
+    }
+
+    /*protected String getUpdatedLines(String str_A, String str_B) {
         HashSet<String> hash_A = null;
         HashSet<String> hash_B = null;
 
@@ -154,12 +185,14 @@ public class GetHtmlTask
         sb.append("Ignore " + count + " rows\n");
 
         return sb.toString();
-    }
+    }*/
+
     protected boolean isIgnoreStr(String str)
     {
-        String[] ignorestrs = {"ima="};
+        String[] ignorestrs = clData.getIgnoreWords().split(",");
         for(String s:ignorestrs)
         {
+            if(s.equals(""))continue;
             if(str.indexOf(s) > -1) return true;
         }
         return false;

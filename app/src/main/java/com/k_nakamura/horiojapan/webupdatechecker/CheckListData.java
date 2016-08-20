@@ -14,16 +14,19 @@ public class CheckListData
     protected String url;
     protected String lastupdate;
     protected String lastHtml;
-    protected String ignoreWards;
+    protected String ignoreWords;
+    protected boolean isUpdate;
 
-    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml, String ignoreWards)
+    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml, String ignoreWords, boolean isUpdate)
     {
         this.id = id;
         this.title = title;
         this.url = url;
         this.lastupdate = lastupdate;
         this.lastHtml = lastHtml;
-        this.ignoreWards = ignoreWards;
+        this.ignoreWords = ignoreWords;
+
+        this.isUpdate = isUpdate;
     }
 
     public int getId() {
@@ -66,11 +69,26 @@ public class CheckListData
         this.url = url;
     }
 
-    public String getIgnoreWards() {
-        return ignoreWards;
+    public String getIgnoreWords() {
+        return ignoreWords;
     }
 
-    public void setIgnoreWards(String ignoreWards) {
-        this.ignoreWards = ignoreWards;
+    public void setIgnoreWords(String ignoreWords) {
+        this.ignoreWords = ignoreWords;
+    }
+
+    public boolean isUpdate() {
+        return isUpdate;
+    }
+
+    public void setIsUpdate(boolean update) {
+        isUpdate = update;
+    }
+    public String getIsUpdateText()
+    {
+        if(isUpdate)
+            return "Updated!";
+        else
+            return "Not Updated";
     }
 }

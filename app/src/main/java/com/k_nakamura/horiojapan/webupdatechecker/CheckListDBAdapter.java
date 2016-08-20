@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class CheckListDBAdapter {
     static final String DATABASE_NAME = "mychecklist.db";
-    static final int DATABASE_VERSION = 1;
+    static final int DATABASE_VERSION = 2;
 
     public static final String TABLE_NAME = "checklist";
     public static final String COL_ID = "_id";
@@ -20,6 +20,7 @@ public class CheckListDBAdapter {
     public static final String COL_LASTHTML = "lasthtml";
     public static final String COL_LASTUPDATE = "lastupdate";
     public static final String COL_IGNOREWARDS = "ignorewards";
+    public static final String COL_ISUPDATED = "isupdated";
 
     protected final Context context;
 
@@ -47,6 +48,7 @@ public class CheckListDBAdapter {
                             + COL_LASTUPDATE + " TEXT NOT NULL,"
                             + COL_URL + " TEXT NOT NULL,"
                             + COL_LASTHTML + " TEXT NOT NULL,"
+                            + COL_ISUPDATED + " BOOLEAN NOT NULL,"
                             + COL_IGNOREWARDS + " TEXT NOT NULL);"
             );
         }
@@ -87,7 +89,8 @@ public class CheckListDBAdapter {
         values.put(COL_LASTUPDATE, checkListData.getLastupdate());
         values.put(COL_TITLE,checkListData.getTitle());
         values.put(COL_URL,checkListData.getUrl());
-        values.put(COL_IGNOREWARDS,checkListData.getIgnoreWards());
+        values.put(COL_IGNOREWARDS,checkListData.getIgnoreWords());
+        values.put(COL_ISUPDATED, checkListData.isUpdate());
         db.insertOrThrow(TABLE_NAME, null, values);
     }
 
@@ -98,7 +101,8 @@ public class CheckListDBAdapter {
         values.put(COL_LASTUPDATE, checkListData.getLastupdate());
         values.put(COL_TITLE,checkListData.getTitle());
         values.put(COL_URL,checkListData.getUrl());
-        values.put(COL_IGNOREWARDS,checkListData.getIgnoreWards());
+        values.put(COL_IGNOREWARDS,checkListData.getIgnoreWords());
+        values.put(COL_ISUPDATED, checkListData.isUpdate());
         db.update(TABLE_NAME, values,COL_ID + "=?", new String[]{""+ checkListData.getId()});
     }
 }

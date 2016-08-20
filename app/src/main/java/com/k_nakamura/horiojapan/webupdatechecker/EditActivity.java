@@ -27,10 +27,12 @@ public class EditActivity
 
     static final int MENU_ID_SAVE = 1;
 
+    static int _wordsId;
+
     EditText editTitleEditText;
     EditText editURLEditText;
-    LinearLayout editIgnoreWardsLinearLayout;
-    Button addIgnoreWardsButton;
+    LinearLayout editIgnoreWordsLinearLayout;
+    Button addIgnoreWordsButton;
 
     CheckListData clData;
 
@@ -45,12 +47,13 @@ public class EditActivity
         Intent intent = getIntent();
         clData = (CheckListData) intent.getSerializableExtra("CheckListData");
         loadCheckListData();
-        loadIgnoreWards();
+        _wordsId = 0;
+        loadIgnoreWords();
 
-        addIgnoreWardsButton.setOnClickListener(new View.OnClickListener() {
+        addIgnoreWordsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editIgnoreWardsLinearLayout.addView(addIgnoreWards(""));
+                editIgnoreWordsLinearLayout.addView(addIgnoreWords(""));
                 count++;
             }
         });
@@ -66,16 +69,17 @@ public class EditActivity
         editURLEditText.setText(clData.getUrl());
     }
 
-    private void loadIgnoreWards()
+    private void loadIgnoreWords()
     {
-        String[] iws = clData.getIgnoreWards().split(",");
+        String[] iws = clData.getIgnoreWords().split(",");
         for(String s:iws)
         {
             if(s.isEmpty())continue;
-            editIgnoreWardsLinearLayout.addView(addIgnoreWards(s));
+            editIgnoreWordsLinearLayout.addView(addIgnoreWords(s));
         }
     }
-    private LinearLayout addIgnoreWards(String ward)
+
+    private LinearLayout addIgnoreWords(String word)
     {
         LinearLayout layout = new LinearLayout(this);
         LinearLayout.LayoutParams params;
@@ -86,31 +90,54 @@ public class EditActivity
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
         EditText editView = new EditText(this);
-        editView.setText(ward);
-        editView.setHint("Ignore Ward");
+        editView.setText(word);
+        editView.setHint("Ignore Word");
         params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.weight = 1;
         layout.addView(editView,params);
+
+        Button deleteButton = new Button(this);
+        deleteButton.setText("-");
+        deleteButton.setTag(_wordsId++);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int index = (int)v.getTag();
+                String[] iws = clData.getIgnoreWords().split(",");
+                StringBuilder sb = new StringBuilder();
+                for(int i = 0 ; i < iws.length ; i++)
+                {
+                    if(i == index)continue;
+                    sb.append(iws[i] + "\n");
+                }
+                clData.setIgnoreWords(sb.toString());
+
+                editIgnoreWordsLinearLayout.removeViewAt(index);
+            }
+        });
+        params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layout.addView(deleteButton, params);
 
         return layout;
     }
-    private void saveIgnoreWards()
+    private void saveIgnoreWords()
     {
         StringBuilder sb = new StringBuilder();
-        for(int i = editIgnoreWardsLinearLayout.getChildCount() - count ; i < editIgnoreWardsLinearLayout.getChildCount() ; i++)
+        for(int i = 0 ; i < editIgnoreWordsLinearLayout.getChildCount() ; i++)
         {
-            LinearLayout ll = (LinearLayout) editIgnoreWardsLinearLayout.getChildAt(i);
+            LinearLayout ll = (LinearLayout) editIgnoreWordsLinearLayout.getChildAt(i);
             sb.append(((EditText)ll.getChildAt(0)).getText().toString());
             sb.append(",");
         }
-        clData.setIgnoreWards(sb.toString());
+        clData.setIgnoreWords(sb.toString());
     }
 
     protected void findViews(){
         editTitleEditText = (EditText)findViewById(R.id.editTitleEditText);
         editURLEditText = (EditText)findViewById(R.id.editURLEditText);
         editURLEditText.addTextChangedListener(this);
-        editIgnoreWardsLinearLayout = (LinearLayout)findViewById(R.id.editIgnoreWardsLinearLayout);
-        addIgnoreWardsButton = (Button)findViewById(R.id.addIgnoreWards);
+        editIgnoreWordsLinearLayout = (LinearLayout)findViewById(R.id.editIgnoreWordsLinearLayout);
+        addIgnoreWordsButton = (Button)findViewById(R.id.addIgnoreWords);
     }
 
 
@@ -119,7 +146,7 @@ public class EditActivity
         clData.setUrl(editURLEditText.getText().toString());
         Date dateNow = new Date();
         clData.setLastupdate(dateNow.toLocaleString());
-        saveIgnoreWards();
+        saveIgnoreWords();
     }
 
     @Override
