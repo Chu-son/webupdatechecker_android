@@ -1,11 +1,51 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
+<!-- Base application theme. -->
+<!-- style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar" -->
+<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar" >
+    <!-- Customize your theme here. -->
+    <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+
+    <!--item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item-->
+    <item name="colorPrimary">@color/gradation_green_end_color</item>
+    <item name="colorPrimaryDark">@color/gradation_green_end_color</item>
+    <item name="colorAccent">@android:color/holo_green_light</item>
+    <!-- Support library compatibility -->
+    <item name="actionBarStyle">@style/ActionBarStyle</item>
+</style>
+
+<style name="ActionBarStyle" parent="Widget.AppCompat.ActionBar.Solid">
+    <item name="android:titleTextStyle">@style/ActionBarTitleStyle</item>
+    <item name="android:subtitleTextStyle">@style/ActionBarSubitleStyle</item>
+    <item name="android:background">@drawable/gradation</item>
+    <item name="android:backgroundStacked">@android:color/white</item>
+    <!-- item name="android:icon">@mipmap/ic_folder2</item -->
+    <item name="android:displayOptions"></item>
+    <!-- Support library compatibility -->
+    <item name="titleTextStyle">@style/ActionBarTitleStyle</item>
+    <item name="subtitleTextStyle">@style/ActionBarSubitleStyle</item>
+    <item name="background">@drawable/gradation</item>
+    <item name="backgroundStacked">@android:color/white</item>
+    <!-- item name="icon">@mipmap/ic_folder2</item -->
+    <!-- item name="displayOptions"></item -->
+</style>
+
+<style name="ActionBarTitleStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <item name="android:textStyle">bold|italic</item>
+    <item name="android:textColor">@android:color/white</item>
+</style>
+
+<style name="ActionBarSubitleStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
+    <item name="android:typeface">monospace</item>
+    <item name="android:textColor">@android:color/white</item>
+</style>
+
+<!--アクションバー非表示-->
+<style name="NoActionBarTheme"
+    parent="@style/Theme.AppCompat.Light">
+    <item name="android:windowNoTitle">true</item>
+</style>
 
 </resources>

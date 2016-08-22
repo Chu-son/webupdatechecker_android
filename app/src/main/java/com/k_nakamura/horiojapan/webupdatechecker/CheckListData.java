@@ -16,8 +16,9 @@ public class CheckListData
     protected String lastHtml;
     protected String ignoreWords;
     protected boolean isUpdate;
+    protected boolean isNotification;
 
-    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml, String ignoreWords, boolean isUpdate)
+    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml, String ignoreWords, boolean isUpdate, boolean isNotification)
     {
         this.id = id;
         this.title = title;
@@ -27,6 +28,7 @@ public class CheckListData
         this.ignoreWords = ignoreWords;
 
         this.isUpdate = isUpdate;
+        this.isNotification = isNotification;
     }
 
     public int getId() {
@@ -90,5 +92,13 @@ public class CheckListData
             return "Updated!";
         else
             return "Not Updated";
+    }
+
+    public boolean isNotification() {
+        return isNotification;
+    }
+
+    public void setIsNotification(boolean notification) {
+        isNotification = notification;
     }
 }

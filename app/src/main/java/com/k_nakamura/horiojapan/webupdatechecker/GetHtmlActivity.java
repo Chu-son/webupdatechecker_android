@@ -42,7 +42,7 @@ public class GetHtmlActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         try {
-                            new GetHtmlTask(new ViewContainer(tv_html,tv_hash,btn_gethtml,null,null),clData)
+                            new GetHtmlTask(new ViewContainer(clData, tv_html,tv_hash,btn_gethtml,null,null))
                                     .execute(new URL(clData.getUrl()));
                         }catch (MalformedURLException e){
                             e.printStackTrace();

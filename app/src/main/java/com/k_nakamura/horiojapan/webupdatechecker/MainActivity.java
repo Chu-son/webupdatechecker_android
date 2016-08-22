@@ -1,13 +1,17 @@
 package com.k_nakamura.horiojapan.webupdatechecker;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +28,7 @@ import android.widget.Toast;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
@@ -32,9 +37,11 @@ public class MainActivity extends AppCompatActivity  {
 
     ListView itemListView;
 
+    SwipeRefreshLayout mSwipeRefresh;
+
     static CheckListDBAdapter clDBAdapter;
     static CheckListAdapter listAdapter;
-    static List<CheckListData> checkListArray = new ArrayList<>();
+    static ArrayList<CheckListData> checkListArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +55,13 @@ public class MainActivity extends AppCompatActivity  {
         listAdapter = new CheckListAdapter();
         itemListView.setAdapter(listAdapter);
         loadCheckList();
+
+
     }
 
     protected void findViews(){
         itemListView = (ListView)findViewById(R.id.itemListView);
+        mSwipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
     }
 
     protected void setListeners(){
@@ -73,6 +83,14 @@ public class MainActivity extends AppCompatActivity  {
                 startActivity(i);
             }
         });
+
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // 引っ張って離した時に呼ばれます。
+                allCheck();
+            }
+        });
     }
 
     protected void loadCheckList(){
@@ -90,7 +108,8 @@ public class MainActivity extends AppCompatActivity  {
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_LASTUPDATE)),
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_LASTHTML)),
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_IGNOREWARDS)),
-                        c.getInt(c.getColumnIndex(CheckListDBAdapter.COL_ISUPDATED))==1
+                        c.getInt(c.getColumnIndex(CheckListDBAdapter.COL_ISUPDATED))==1,
+                        true
                 );
                 checkListArray.add(clData);
             } while(c.moveToNext());
@@ -101,6 +120,13 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private class CheckListAdapter extends BaseAdapter {
+        List<ViewContainer> containerArray;
+
+        public CheckListAdapter()
+        {
+            containerArray = new ArrayList<>();
+        }
+
         @Override
         public int getCount() {
             return checkListArray.size();
@@ -146,7 +172,7 @@ public class MainActivity extends AppCompatActivity  {
                     public void onClick(View v) {
                         CheckListData clData = (CheckListData) getItem((int)v.getTag());
                         try {
-                            new GetHtmlTask(new ViewContainer(null,null,checkButton,isUpdate,lastupdateTextView),clData)
+                            new GetHtmlTask(new ViewContainer(clData, null,null,checkButton,isUpdate,lastupdateTextView))
                                     .execute(new URL(clData.getUrl()));
                         }catch (MalformedURLException e){
                             e.printStackTrace();
@@ -169,9 +195,19 @@ public class MainActivity extends AppCompatActivity  {
                         return false;
                     }
                 });
+
+                ViewContainer vc = new ViewContainer(checkList,null,null,checkButton,isUpdate,lastupdateTextView);
+                if(containerArray.size() < position + 1 )
+                    containerArray.add(vc);
+
             }
 
             return v;
+        }
+
+        public List<ViewContainer> getContainerArray()
+        {
+            return containerArray;
         }
     }
 
@@ -235,8 +271,34 @@ public class MainActivity extends AppCompatActivity  {
 
     private void allCheck()
     {
-    }
+        ViewContainer vc;
+        for(int i = 0; i < checkListArray.size(); i++)
+        {
+            int vPos = itemListView.getFirstVisiblePosition();
+            int cCount = itemListView.getChildCount();
+            if(i >= vPos && i < vPos + cCount) {
+                TextView isUpdateText = (TextView) itemListView.getChildAt(i - vPos).findViewById(R.id.dataIsUpdate);
+                TextView lastUpdateText = (TextView) itemListView.getChildAt(i - vPos).findViewById(R.id.dataLastupdate);
+                Button checkButton = (Button) itemListView.getChildAt(i - vPos).findViewById(R.id.check_button);
+                vc = new ViewContainer(checkListArray.get(i), null, null, checkButton, isUpdateText, lastUpdateText);
+            }
+            else
+            {
+                vc = new ViewContainer(checkListArray.get(i), null, null, null, null, null);
+            }
+            try {
+                new GetHtmlTask(vc)
+                        .execute(new URL(vc.getCheckListData().getUrl()));
+            }catch (MalformedURLException e){
+                e.printStackTrace();
+            }
+        }
 
+        if(mSwipeRefresh.isRefreshing())
+        {
+            mSwipeRefresh.setRefreshing(false);
+        }
+    }
 
     /*
      *  オプションメニュー作成
@@ -257,10 +319,14 @@ public class MainActivity extends AppCompatActivity  {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            editContent(new CheckListData(0,"","","","","",false));
+            editContent(new CheckListData(0,"","","","","",false,true));
             return true;
         }
-        if (id == R.id.action_allcheck) {
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_setting) {
+            Intent intent = new Intent(getApplication(), SettingActivity.class);
+            intent.putExtra("checkDataArray", checkListArray);
+            startActivity( intent );
 
             return true;
         }

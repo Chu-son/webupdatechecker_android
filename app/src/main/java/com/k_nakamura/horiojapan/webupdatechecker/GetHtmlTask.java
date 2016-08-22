@@ -33,70 +33,29 @@ public class GetHtmlTask
 
     private CheckListData clData;
 
-    public GetHtmlTask(ViewContainer viewContainer, CheckListData clData)
+    public GetHtmlTask(ViewContainer viewContainer)
     {
         super();
         this.viewContainer = viewContainer;
-        this.clData = clData;
+        this.clData = viewContainer.getCheckListData();
 
         viewContainer.flipCheckButtonText();
+        viewContainer.setIsUpdateText("Checking...");
+
         preHtml = clData.getLastHtml();
+
+        clData.setIsUpdate(false);
     }
 
     @Override
-    protected String doInBackground(URL... urls) {
-        // 取得したテキストを格納する変数
-        final StringBuilder result = new StringBuilder();
-        // アクセス先URL
-        final URL url = urls[0];
-
-        HttpURLConnection con = null;
-        try {
-            // ローカル処理
-            // コネクション取得
-            con = (HttpURLConnection) url.openConnection();
-            con.connect();
-
-            // HTTPレスポンスコード
-            final int status = con.getResponseCode();
-            if (status == HttpURLConnection.HTTP_OK) {
-                // 通信に成功した
-                // テキストを取得する
-                final InputStream in = con.getInputStream();
-                String encoding = con.getContentEncoding();
-                if (encoding == null) encoding = "UTF8";
-                final InputStreamReader inReader = new InputStreamReader(in, encoding);
-                final BufferedReader bufReader = new BufferedReader(inReader);
-                String line = null;
-                // 1行ずつテキストを読み込む
-                while((line = bufReader.readLine()) != null) {
-                    result.append(line);
-                    result.append("\n");
-                }
-                bufReader.close();
-                inReader.close();
-                in.close();
-            }
-
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        } catch (ProtocolException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } finally {
-            if (con != null) {
-                // コネクションを切断
-                con.disconnect();
-            }
-        }
-        return result.toString();
+    protected String doInBackground(URL... urls)
+    {
+        return getHTML(urls[0]);
     }
 
     @Override
     protected void onPostExecute(String result) {
         String diff;
-        String isUpdateStr;
         //result = getCombinedStr(splitHtmlTags(result));
         //preHtml = getCombinedStr(splitHtmlTags(preHtml));
 
@@ -104,7 +63,7 @@ public class GetHtmlTask
         preHtml = getTrimStr(preHtml);
 
         if(!result.equals(preHtml)) {
-            diff = getUpdatedLines(result, preHtml);
+            diff = getUpdatedLines(result, preHtml, clData);
         }
         else
         {
@@ -122,7 +81,7 @@ public class GetHtmlTask
         viewContainer.flipCheckButtonText();
     }
 
-    protected String getUpdatedLines(String str_A, String str_B) {
+    public static String getUpdatedLines(String str_A, String str_B, CheckListData clData) {
         String[] str_A_array = str_A.split("\n");
         String[] str_B_array = str_B.split("\n");
 
@@ -133,7 +92,7 @@ public class GetHtmlTask
             if(i == str_A_array.length || i == str_B_array.length)break;
             if(!str_A_array[i].equals(str_B_array[i]))
             {
-                if(isIgnoreStr(str_A_array[i]))
+                if(isIgnoreStr(str_A_array[i], clData))
                 {
                     count++;
                     continue;
@@ -187,7 +146,7 @@ public class GetHtmlTask
         return sb.toString();
     }*/
 
-    protected boolean isIgnoreStr(String str)
+    protected static boolean isIgnoreStr(String str, CheckListData clData)
     {
         String[] ignorestrs = clData.getIgnoreWords().split(",");
         for(String s:ignorestrs)
@@ -227,7 +186,7 @@ public class GetHtmlTask
         }
         return sb.toString();
     }
-    protected String getTrimStr(String str)
+    public static String getTrimStr(String str)
     {
         StringBuilder sb = new StringBuilder();
         String[] str_list = str.split("\n");
@@ -239,4 +198,52 @@ public class GetHtmlTask
         return sb.toString();
     }
 
+    public static String getHTML(URL url)
+    {
+        // 取得したテキストを格納する変数
+        final StringBuilder result = new StringBuilder();
+
+        HttpURLConnection con = null;
+        try {
+            // ローカル処理
+            // コネクション取得
+            con = (HttpURLConnection) url.openConnection();
+            con.connect();
+
+            // HTTPレスポンスコード
+            final int status = con.getResponseCode();
+            if (status == HttpURLConnection.HTTP_OK) {
+                // 通信に成功した
+                // テキストを取得する
+                final InputStream in = con.getInputStream();
+                String encoding = con.getContentEncoding();
+                if (encoding == null) encoding = "UTF8";
+                final InputStreamReader inReader = new InputStreamReader(in, encoding);
+                final BufferedReader bufReader = new BufferedReader(inReader);
+                String line = null;
+                // 1行ずつテキストを読み込む
+                while((line = bufReader.readLine()) != null) {
+                    result.append(line);
+                    result.append("\n");
+                }
+                bufReader.close();
+                inReader.close();
+                in.close();
+            }
+
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (ProtocolException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            if (con != null) {
+                // コネクションを切断
+                con.disconnect();
+            }
+        }
+
+        return result.toString();
+    }
 }

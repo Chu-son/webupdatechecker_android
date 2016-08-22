@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_allcheck"
-        android:orderInCategory="1"
-        app:showAsAction="always"
-        android:title="ALL"/>
-
-    <item
         android:id="@+id/action_add"
         android:orderInCategory="1"
         app:showAsAction="always"
         android:title="add"
         android:icon="@android:drawable/ic_menu_add"/>
+
+    <item
+        android:id="@+id/action_setting"
+        android:orderInCategory="1"
+        app:showAsAction="never"
+        android:title="SETTING" />
+
 </menu>
