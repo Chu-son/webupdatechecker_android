@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity  {
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_URL)),
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_LASTUPDATE)),
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_LASTHTML)),
+                        c.getString(c.getColumnIndex(CheckListDBAdapter.COL_LASTDIFFERENCE)),
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_IGNOREWARDS)),
                         c.getInt(c.getColumnIndex(CheckListDBAdapter.COL_ISUPDATED))==1,
                         c.getInt(c.getColumnIndex(CheckListDBAdapter.COL_ISNOTIFICATION))==1
@@ -327,7 +328,7 @@ public class MainActivity extends AppCompatActivity  {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            editContent(new CheckListData(0,"","","","","",false,false));
+            editContent(new CheckListData(0,"","","","","","",false,false));
             return true;
         }
         //noinspection SimplifiableIfStatement

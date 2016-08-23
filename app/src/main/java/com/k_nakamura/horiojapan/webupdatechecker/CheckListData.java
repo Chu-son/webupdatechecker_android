@@ -16,17 +16,19 @@ public class CheckListData
     protected String url;
     protected String lastupdate;
     protected String lastHtml;
+    protected String lastDifference;
     protected String ignoreWords;
     protected boolean isUpdate;
     protected boolean isNotification;
 
-    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml, String ignoreWords, boolean isUpdate, boolean isNotification)
+    public CheckListData(int id, String title, String url, String lastupdate, String lastHtml, String lastDifference, String ignoreWords, boolean isUpdate, boolean isNotification)
     {
         this.id = id;
         this.title = title;
         this.url = url;
         this.lastupdate = lastupdate;
         this.lastHtml = lastHtml;
+        this.lastDifference = lastDifference;
         this.ignoreWords = ignoreWords;
 
         this.isUpdate = isUpdate;
@@ -110,5 +112,13 @@ public class CheckListData
         clDBAdapter.open();
         clDBAdapter.update(this);
         clDBAdapter.close();
+    }
+
+    public String getLastDifference() {
+        return lastDifference;
+    }
+
+    public void setLastDifference(String lastDifference) {
+        this.lastDifference = lastDifference;
     }
 }

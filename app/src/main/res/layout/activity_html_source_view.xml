@@ -61,6 +61,15 @@ android:layout_height="match_parent">
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ISUPDATE"
+                    android:id="@+id/isUpdate_sourceview"
+                    android:layout_alignBaseline="@+id/get_button"
+                    android:layout_alignParentRight="true"
+                    android:layout_toRightOf="@+id/get_button"/>
+
             </RelativeLayout>
         </ScrollView>
     </HorizontalScrollView>

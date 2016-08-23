@@ -67,22 +67,20 @@ public class GetHtmlTask
 
         if(!result.equals(preHtml)) {
             diff = getUpdatedLines(result, preHtml, clData);
+
+            viewContainer.setDiffText(diff);
+            viewContainer.setHtmlText(result);
+
+            clData.setLastHtml(result);
+            clData.setLastDifference(diff);
         }
-        else
-        {
-            diff = "";
-        }
-        viewContainer.setDiffText(diff);
-        viewContainer.setHtmlText(result);
+
         viewContainer.setIsUpdateText(clData.getIsUpdateText());
         viewContainer.setLastUpdateTextNow();
-
-        clData.setLastHtml(result);
-        Date dateNow = new Date();
-        clData.setLastupdate(dateNow.toLocaleString());
-
         viewContainer.flipCheckButtonText();
 
+        Date dateNow = new Date();
+        clData.setLastupdate(dateNow.toLocaleString());
         clData.updateDB(context);
     }
 

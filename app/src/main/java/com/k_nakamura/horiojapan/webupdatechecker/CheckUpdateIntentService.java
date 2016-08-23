@@ -40,6 +40,7 @@ public class CheckUpdateIntentService extends IntentService {
 
         String result;
         String preHtml;
+        String diff;
         for(CheckListData clData:clDataArray)
         {
             if(!clData.isNotification())continue;
@@ -48,19 +49,23 @@ public class CheckUpdateIntentService extends IntentService {
                 result = GetHtmlTask.getHTML(new URL(clData.getUrl()));
                 result = GetHtmlTask.getTrimStr(result);
                 preHtml = GetHtmlTask.getTrimStr(clData.getLastHtml());
+                diff = "";
 
                 if(!result.equals(preHtml)) {
-                    GetHtmlTask.getUpdatedLines(result, preHtml, clData);
+                    diff = GetHtmlTask.getUpdatedLines(result, preHtml, clData);
                 }
                 if(clData.isUpdate()){
                     isUpdateCount++;
                     resultTextBuilder.append(clData.getTitle() + "\n");
 
                     clData.setLastHtml(result);
-                    Date dateNow = new Date();
-                    clData.setLastupdate(dateNow.toLocaleString());
-                    clData.updateDB(this);
+                    clData.setLastDifference(diff);
                 }
+
+                Date dateNow = new Date();
+                clData.setLastupdate(dateNow.toLocaleString());
+                clData.updateDB(this);
+
             }catch (MalformedURLException e){
                 e.printStackTrace();
             }

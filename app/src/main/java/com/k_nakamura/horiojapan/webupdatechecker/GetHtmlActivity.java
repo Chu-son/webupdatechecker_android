@@ -21,6 +21,7 @@ public class GetHtmlActivity extends AppCompatActivity {
 
     TextView tv_html;
     TextView tv_hash;
+    TextView tv_isUpdate;
     Button btn_gethtml;
 
     CheckListData clData;
@@ -36,13 +37,15 @@ public class GetHtmlActivity extends AppCompatActivity {
         findViews();
 
         tv_html.setText(clData.getLastHtml());
+        tv_hash.setText(clData.getLastDifference());
+        tv_isUpdate.setText(clData.getIsUpdateText());
 
         btn_gethtml.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
-                            new GetHtmlTask(GetHtmlActivity.this, new ViewContainer(clData, tv_html,tv_hash,btn_gethtml,null,null))
+                            new GetHtmlTask(GetHtmlActivity.this, new ViewContainer(clData, tv_html,tv_hash,btn_gethtml,tv_isUpdate,null))
                                     .execute(new URL(clData.getUrl()));
                         }catch (MalformedURLException e){
                             e.printStackTrace();
@@ -55,6 +58,7 @@ public class GetHtmlActivity extends AppCompatActivity {
     protected void findViews(){
         tv_hash = (TextView)findViewById(R.id.hash);
         tv_html = (TextView)findViewById(R.id.html);
+        tv_isUpdate = (TextView)findViewById(R.id.isUpdate_sourceview);
         btn_gethtml = (Button)findViewById(R.id.get_button);
     }
 
