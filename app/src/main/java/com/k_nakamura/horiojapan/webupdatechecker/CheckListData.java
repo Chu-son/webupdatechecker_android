@@ -1,5 +1,7 @@
 package com.k_nakamura.horiojapan.webupdatechecker;
 
+import android.content.Context;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -100,5 +102,13 @@ public class CheckListData
 
     public void setIsNotification(boolean notification) {
         isNotification = notification;
+    }
+
+    public void updateDB(Context context)
+    {
+        CheckListDBAdapter clDBAdapter = new CheckListDBAdapter(context);
+        clDBAdapter.open();
+        clDBAdapter.update(this);
+        clDBAdapter.close();
     }
 }

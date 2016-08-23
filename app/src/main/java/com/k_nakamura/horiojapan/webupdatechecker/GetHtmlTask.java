@@ -1,5 +1,6 @@
 package com.k_nakamura.horiojapan.webupdatechecker;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Debug;
@@ -32,12 +33,14 @@ public class GetHtmlTask
     private ViewContainer viewContainer;
 
     private CheckListData clData;
+    private Context context;
 
-    public GetHtmlTask(ViewContainer viewContainer)
+    public GetHtmlTask(Context context, ViewContainer viewContainer)
     {
         super();
         this.viewContainer = viewContainer;
         this.clData = viewContainer.getCheckListData();
+        this.context = context;
 
         viewContainer.flipCheckButtonText();
         viewContainer.setIsUpdateText("Checking...");
@@ -79,6 +82,8 @@ public class GetHtmlTask
         clData.setLastupdate(dateNow.toLocaleString());
 
         viewContainer.flipCheckButtonText();
+
+        clData.updateDB(context);
     }
 
     public static String getUpdatedLines(String str_A, String str_B, CheckListData clData) {

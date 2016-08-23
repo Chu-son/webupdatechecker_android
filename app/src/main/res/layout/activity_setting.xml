@@ -49,19 +49,28 @@
                 android:layout_marginTop="10dp">
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Check interval"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Check time"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
 
-            <Spinner
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:id="@+id/checkTimeText"/>
+
+            <!--Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog"
-                android:id="@+id/intervalSpinner" />
+                android:id="@+id/intervalSpinner" /-->
+
 
             </LinearLayout>
 

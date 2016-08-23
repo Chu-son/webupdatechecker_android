@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity  {
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_LASTHTML)),
                         c.getString(c.getColumnIndex(CheckListDBAdapter.COL_IGNOREWARDS)),
                         c.getInt(c.getColumnIndex(CheckListDBAdapter.COL_ISUPDATED))==1,
-                        true
+                        c.getInt(c.getColumnIndex(CheckListDBAdapter.COL_ISNOTIFICATION))==1
                 );
                 checkListArray.add(clData);
             } while(c.moveToNext());
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity  {
                     public void onClick(View v) {
                         CheckListData clData = (CheckListData) getItem((int)v.getTag());
                         try {
-                            new GetHtmlTask(new ViewContainer(clData, null,null,checkButton,isUpdate,lastupdateTextView))
+                            new GetHtmlTask(MainActivity.this, new ViewContainer(clData, null,null,checkButton,isUpdate,lastupdateTextView))
                                     .execute(new URL(clData.getUrl()));
                         }catch (MalformedURLException e){
                             e.printStackTrace();
@@ -187,9 +187,7 @@ public class MainActivity extends AppCompatActivity  {
                         CheckListData checkList = (CheckListData) getItem((int)v.getTag());
                         intent.putExtra("CheckListData", checkList);
 
-                        int requestCode ;
-                        if(checkList.getId() == 0) requestCode = 1000;
-                        else requestCode = 2000;
+                        int requestCode = 2000;
                         startActivityForResult( intent, requestCode );
 
                         return false;
@@ -266,12 +264,20 @@ public class MainActivity extends AppCompatActivity  {
         if(requestCode == 2000) clDBAdapter.update((CheckListData) intent.getSerializableExtra("RESULT"));
 
         clDBAdapter.close();
+
+        if(requestCode == 3000)
+        {
+            checkListArray = (ArrayList<CheckListData>)intent.getSerializableExtra("checkDataArray");
+            for(CheckListData clData:checkListArray) clData.updateDB(this);
+        }
+
         loadCheckList();
     }
 
     private void allCheck()
     {
         ViewContainer vc;
+        List<ViewContainer> vcArray = new ArrayList<>();
         for(int i = 0; i < checkListArray.size(); i++)
         {
             int vPos = itemListView.getFirstVisiblePosition();
@@ -287,11 +293,13 @@ public class MainActivity extends AppCompatActivity  {
                 vc = new ViewContainer(checkListArray.get(i), null, null, null, null, null);
             }
             try {
-                new GetHtmlTask(vc)
+                new GetHtmlTask(this, vc)
                         .execute(new URL(vc.getCheckListData().getUrl()));
             }catch (MalformedURLException e){
                 e.printStackTrace();
             }
+
+            vcArray.add(vc);
         }
 
         if(mSwipeRefresh.isRefreshing())
@@ -319,14 +327,15 @@ public class MainActivity extends AppCompatActivity  {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            editContent(new CheckListData(0,"","","","","",false,true));
+            editContent(new CheckListData(0,"","","","","",false,false));
             return true;
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_setting) {
             Intent intent = new Intent(getApplication(), SettingActivity.class);
             intent.putExtra("checkDataArray", checkListArray);
-            startActivity( intent );
+            int requestCode = 3000;
+            startActivityForResult( intent ,requestCode);
 
             return true;
         }

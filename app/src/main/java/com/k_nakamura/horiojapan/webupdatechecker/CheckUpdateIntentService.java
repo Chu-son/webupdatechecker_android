@@ -13,6 +13,7 @@ import android.util.Log;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,13 +34,16 @@ public class CheckUpdateIntentService extends IntentService {
     protected void onHandleIntent(Intent intent)
     {
         clDataArray = (ArrayList<CheckListData>)intent.getSerializableExtra("checkDataArray");
+
         StringBuilder resultTextBuilder = new StringBuilder();
         int isUpdateCount = 0;
 
+        String result;
+        String preHtml;
         for(CheckListData clData:clDataArray)
         {
-            String result;
-            String preHtml;
+            if(!clData.isNotification())continue;
+
             try {
                 result = GetHtmlTask.getHTML(new URL(clData.getUrl()));
                 result = GetHtmlTask.getTrimStr(result);
@@ -51,6 +55,11 @@ public class CheckUpdateIntentService extends IntentService {
                 if(clData.isUpdate()){
                     isUpdateCount++;
                     resultTextBuilder.append(clData.getTitle() + "\n");
+
+                    clData.setLastHtml(result);
+                    Date dateNow = new Date();
+                    clData.setLastupdate(dateNow.toLocaleString());
+                    clData.updateDB(this);
                 }
             }catch (MalformedURLException e){
                 e.printStackTrace();
