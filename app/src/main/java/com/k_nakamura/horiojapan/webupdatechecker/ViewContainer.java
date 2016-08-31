@@ -1,5 +1,6 @@
 package com.k_nakamura.horiojapan.webupdatechecker;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -15,10 +16,11 @@ public class ViewContainer {
     private TextView tv_isUpdate;
     private TextView lastUpdate;
     private CheckListData clData;
+    private SwipeRefreshLayout mSwipeRefresh;
 
     private String checkButtonText;
 
-    public ViewContainer(CheckListData clData, TextView tv_html, TextView tv_diff, Button btn_check, TextView tv_isUpdate, TextView lastUpdate)
+    public ViewContainer(CheckListData clData, TextView tv_html, TextView tv_diff, Button btn_check, TextView tv_isUpdate, TextView lastUpdate, SwipeRefreshLayout mSwipeRefresh)
     {
         this.tv_html = tv_html;
         this.tv_diff = tv_diff;
@@ -26,6 +28,7 @@ public class ViewContainer {
         this.tv_isUpdate = tv_isUpdate;
         this.lastUpdate = lastUpdate;
         this.clData = clData;
+        this.mSwipeRefresh = mSwipeRefresh;
 
         if(btn_check != null) checkButtonText = btn_check.getText().toString();
     }
@@ -69,6 +72,12 @@ public class ViewContainer {
         if(lastUpdate == null)return;
         Date dateNow = new Date();
         lastUpdate.setText(dateNow.toLocaleString());
+    }
+
+    public void stopRefreshing()
+    {
+        if(mSwipeRefresh == null)return;
+        mSwipeRefresh.setRefreshing(false);
     }
 
     public CheckListData getCheckListData()

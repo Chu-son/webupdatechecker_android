@@ -45,7 +45,7 @@ public class GetHtmlActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         try {
-                            new GetHtmlTask(GetHtmlActivity.this, new ViewContainer(clData, tv_html,tv_hash,btn_gethtml,tv_isUpdate,null))
+                            new GetHtmlTask(GetHtmlActivity.this, new ViewContainer(clData, tv_html,tv_hash,btn_gethtml,tv_isUpdate,null,null))
                                     .execute(new URL(clData.getUrl()));
                         }catch (MalformedURLException e){
                             e.printStackTrace();
@@ -73,6 +73,7 @@ public class GetHtmlActivity extends AppCompatActivity {
         return true;
     }
     @Override
+
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long

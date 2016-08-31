@@ -7,10 +7,13 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="UpdateCheckList"
+        android:label="推し事効率化ツール"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:label="UpdateCheckList">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

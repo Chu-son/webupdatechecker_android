@@ -6,4 +6,24 @@
 
     <color name="gradation_green_start_color">#d5ffcc</color>
     <color name="gradation_green_end_color">#26e300</color>
+
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="blue">#0000FF</color>
+    <color name="red">#FF0000</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="green">#00FF00</color>
+    <color name="purple">#9900CC</color>
+    <color name="pink">#FF00FF</color>
+    <color name="gray">#BEBEBE</color>
+    <color name="ivory">#EEEEE0</color>
+    <color name="orange">#FF9900</color>
+    <color name="brown">#CC9900</color>
+    <color name="cream">#FFFFCC</color>
+    <color name="darkcyan">#008B8B</color>
+    <color name="lightyellow">#ffffE0</color>
+    <color name="wheat">#F5DEB3</color>
+    <color name="slateblue">#6A5ACD</color>
+    
 </resources>

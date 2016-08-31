@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity  {
     protected void findViews(){
         itemListView = (ListView)findViewById(R.id.itemListView);
         mSwipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
+        mSwipeRefresh.setColorSchemeResources(R.color.green, R.color.red, R.color.blue, R.color.yellow);
     }
 
     protected void setListeners(){
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity  {
                     public void onClick(View v) {
                         CheckListData clData = (CheckListData) getItem((int)v.getTag());
                         try {
-                            new GetHtmlTask(MainActivity.this, new ViewContainer(clData, null,null,checkButton,isUpdate,lastupdateTextView))
+                            new GetHtmlTask(MainActivity.this, new ViewContainer(clData, null,null,checkButton,isUpdate,lastupdateTextView, null))
                                     .execute(new URL(clData.getUrl()));
                         }catch (MalformedURLException e){
                             e.printStackTrace();
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 });
 
-                ViewContainer vc = new ViewContainer(checkList,null,null,checkButton,isUpdate,lastupdateTextView);
+                ViewContainer vc = new ViewContainer(checkList,null,null,checkButton,isUpdate,lastupdateTextView,null);
                 if(containerArray.size() < position + 1 )
                     containerArray.add(vc);
 
@@ -287,11 +288,11 @@ public class MainActivity extends AppCompatActivity  {
                 TextView isUpdateText = (TextView) itemListView.getChildAt(i - vPos).findViewById(R.id.dataIsUpdate);
                 TextView lastUpdateText = (TextView) itemListView.getChildAt(i - vPos).findViewById(R.id.dataLastupdate);
                 Button checkButton = (Button) itemListView.getChildAt(i - vPos).findViewById(R.id.check_button);
-                vc = new ViewContainer(checkListArray.get(i), null, null, checkButton, isUpdateText, lastUpdateText);
+                vc = new ViewContainer(checkListArray.get(i), null, null, checkButton, isUpdateText, lastUpdateText, mSwipeRefresh);
             }
             else
             {
-                vc = new ViewContainer(checkListArray.get(i), null, null, null, null, null);
+                vc = new ViewContainer(checkListArray.get(i), null, null, null, null, null, mSwipeRefresh);
             }
             try {
                 new GetHtmlTask(this, vc)
@@ -303,10 +304,6 @@ public class MainActivity extends AppCompatActivity  {
             vcArray.add(vc);
         }
 
-        if(mSwipeRefresh.isRefreshing())
-        {
-            mSwipeRefresh.setRefreshing(false);
-        }
     }
 
     /*

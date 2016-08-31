@@ -35,6 +35,8 @@ public class GetHtmlTask
     private CheckListData clData;
     private Context context;
 
+    private static int instanceCount = 0;
+
     public GetHtmlTask(Context context, ViewContainer viewContainer)
     {
         super();
@@ -48,6 +50,8 @@ public class GetHtmlTask
         preHtml = clData.getLastHtml();
 
         clData.setIsUpdate(false);
+
+        instanceCount++;
     }
 
     @Override
@@ -82,6 +86,12 @@ public class GetHtmlTask
         Date dateNow = new Date();
         clData.setLastupdate(dateNow.toLocaleString());
         clData.updateDB(context);
+
+        instanceCount--;
+        if(instanceCount == 0)
+        {
+            viewContainer.stopRefreshing();
+        }
     }
 
     public static String getUpdatedLines(String str_A, String str_B, CheckListData clData) {
@@ -102,15 +112,29 @@ public class GetHtmlTask
                 }
                 clData.setIsUpdate(true);
 
-                sb.append(str_B_array[i]);
+                /*sb.append(str_B_array[i]);
                 sb.append("\n");
                 sb.append("=> ");
                 sb.append(str_A_array[i]);
-                sb.append("\n");
+                sb.append("\n");*/
             }
         }
         sb.append("Ignore " + count + " rows\n");
-        sb.append("Diff " + (str_B_array.length-str_A_array.length) + " rows\n");
+        sb.append("Diff " + (str_A_array.length-str_B_array.length) + " rows\n");
+        sb.append("\n");
+
+        CalcStringDifference.ResultStringArrays result = CalcStringDifference.getStringLinesDifference(str_B_array,str_A_array,clData);
+        sb.append("Add\n");
+        for(String str:result.getAddStringArray())
+        {
+            sb.append(str + "\n");
+        }
+        sb.append("\nDelete\n");
+        for(String str:result.getDeleteStringArray())
+        {
+            sb.append(str + "\n");
+        }
+
         return sb.toString();
     }
 
@@ -149,7 +173,7 @@ public class GetHtmlTask
         return sb.toString();
     }*/
 
-    protected static boolean isIgnoreStr(String str, CheckListData clData)
+    public static boolean isIgnoreStr(String str, CheckListData clData)
     {
         String[] ignorestrs = clData.getIgnoreWords().split(",");
         for(String s:ignorestrs)
