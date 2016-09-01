@@ -108,6 +108,9 @@ public class GetHtmlTask
                 if(isIgnoreStr(str_A_array[i], clData))
                 {
                     count++;
+                    sb.append("  Ignore line : ");
+                    sb.append(str_A_array[i]);
+                    sb.append("\n");
                     continue;
                 }
                 clData.setIsUpdate(true);

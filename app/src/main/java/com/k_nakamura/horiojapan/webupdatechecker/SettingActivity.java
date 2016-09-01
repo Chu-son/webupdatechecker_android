@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -36,13 +37,20 @@ public class SettingActivity extends AppCompatActivity
 {
     static final int MENU_ID_SAVE = 1;
 
+    private static int _checkTimeIndex;
+
     Switch isNotificationSwitch;
     Spinner intervalSpinner;
     LinearLayout checkListContainerLinearLayout;
     TextView checkTimeText;
 
+    LinearLayout checkTimeTextLinerLayout;
+    Button addCheckTimeButton;
+
     private ArrayList<CheckListData> clDataArray;
     private int _dataId = 0;
+
+    private List<String> checkTimeList = new ArrayList<>();
 
     SharedPreferences shPref;
     private boolean preNotificationSetting;
@@ -63,7 +71,13 @@ public class SettingActivity extends AppCompatActivity
         preNotificationSetting =  shPref.getBoolean("PreKey_IsNotification",false);
         isNotificationSwitch.setChecked( preNotificationSetting );
         //intervalSpinner.setSelection( shPref.getInt("PreKey_SpinnerSelection",0) );
-        checkTimeText.setText(shPref.getString("PreKey_CheckTimeString","00:00"));
+
+        for(String timeStr:shPref.getString("PreKey_CheckTimeString","00:00").split(","))
+        {
+            if(!timeStr.equals("")) checkTimeTextLinerLayout.addView(addCheckTime(timeStr));
+        }
+        CheckUpdateIntentService.CHECKUPDATESERVICE_COUNT = shPref.getInt("PreKey_CheckUpdateServiceCount",0);
+        //checkTimeText.setText(shPref.getString("PreKey_CheckTimeString","00:00"));
     }
 
     protected void findViews(){
@@ -71,7 +85,10 @@ public class SettingActivity extends AppCompatActivity
 
         //intervalSpinner = (Spinner)findViewById(R.id.intervalSpinner);
         checkListContainerLinearLayout = (LinearLayout)findViewById(R.id.settingCheckListContainer);
-        checkTimeText = (TextView)findViewById(R.id.checkTimeText);
+        //checkTimeText = (TextView)findViewById(R.id.checkTimeText);
+
+        addCheckTimeButton = (Button)findViewById(R.id.addCheckTimeButton);
+        checkTimeTextLinerLayout = (LinearLayout)findViewById(R.id.checkTimeTextLinerLayout);
     }
 
     protected void setListeners(){
@@ -114,7 +131,7 @@ public class SettingActivity extends AppCompatActivity
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });*/
-
+/*
         checkTimeText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,6 +150,74 @@ public class SettingActivity extends AppCompatActivity
                 timePickerDialog.show();
             }
         });
+        */
+
+        addCheckTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkTimeTextLinerLayout.addView(addCheckTime("00:00"));
+            }
+        });
+    }
+
+    private LinearLayout addCheckTime(String time)
+    {
+        LinearLayout layout = new LinearLayout(this);
+        LinearLayout.LayoutParams params;
+
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        TextView textView = new TextView(this);
+        textView.setText(time);
+        textView.setTextSize(20);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+                final int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                final int minute = calendar.get(Calendar.MINUTE);
+                final TextView text = (TextView)v;
+
+                final TimePickerDialog timePickerDialog = new TimePickerDialog(SettingActivity.this,
+                        AlertDialog.THEME_HOLO_LIGHT,
+                        new TimePickerDialog.OnTimeSetListener()
+                        {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute)
+                            {
+                                text.setText(String.format("%02d:%02d", hourOfDay,minute));
+                            }
+                        },
+                        hour, minute, true);
+
+                timePickerDialog.show();
+            }
+        });
+        params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.weight = 1;
+        layout.addView(textView,params);
+
+        Button deleteButton = new Button(this,null,R.attr.buttonStyleSmall);
+        deleteButton.setText("-");
+        deleteButton.setTag(_checkTimeIndex++);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int index = (int)v.getTag();
+
+                // ここでサービスの停止処理
+
+                checkTimeTextLinerLayout.removeViewAt(index);
+                reloadCheckTimeTag();
+            }
+        });
+        params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layout.addView(deleteButton, params);
+
+        return layout;
     }
 
     private void loadSettingCheckListData()
@@ -141,6 +226,17 @@ public class SettingActivity extends AppCompatActivity
             checkListContainerLinearLayout.addView(addCheckListData(clData));
         }
     }
+
+    private void reloadCheckTimeTag()
+    {
+        for(int i = 0 ; i < checkTimeTextLinerLayout.getChildCount() ; i++)
+        {
+            LinearLayout ll = (LinearLayout) checkTimeTextLinerLayout.getChildAt(i);
+            ll.getChildAt(1).setTag(i);
+        }
+        _checkTimeIndex = checkTimeTextLinerLayout.getChildCount();
+    }
+
     private LinearLayout addCheckListData(CheckListData clData)
     {
         LinearLayout layout = new LinearLayout(this);
@@ -184,7 +280,7 @@ public class SettingActivity extends AppCompatActivity
 
     private void setNotification()
     {
-        if(!isNotificationSwitch.isChecked())
+        /*if(!isNotificationSwitch.isChecked())
         {
             if(preNotificationSetting)
             {
@@ -196,49 +292,65 @@ public class SettingActivity extends AppCompatActivity
                 am.cancel(sender); // AlramManagerにPendingIntentを登録
             }
             return;
+        }*/
+
+        for(int i = 0 ; i < CheckUpdateIntentService.CHECKUPDATESERVICE_COUNT ; i++)
+        {
+            Intent intent = new Intent(getApplicationContext(), CheckUpdateIntentService.class); // ReceivedActivityを呼び出すインテントを作成
+            intent.putExtra("checkDataArray",clDataArray);
+            PendingIntent sender = PendingIntent.getService(SettingActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT); // ブロードキャストを投げるPendingIntentの作成
+
+            AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE); // AlramManager取得
+            am.cancel(sender); // AlramManagerにPendingIntentを登録
         }
 
-        Intent intent = new Intent(getApplicationContext(), CheckUpdateIntentService.class); // ReceivedActivityを呼び出すインテントを作成
-        intent.putExtra("checkDataArray",clDataArray);
-        PendingIntent sender = PendingIntent.getService(SettingActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); // ブロードキャストを投げるPendingIntentの作成
+        if(!isNotificationSwitch.isChecked()) return;
+
+        for(int i = 0 ; i < checkTimeTextLinerLayout.getChildCount() ; i++)
+        {
+            LinearLayout ll = (LinearLayout) checkTimeTextLinerLayout.getChildAt(i);
+            String timeStr = ((TextView)ll.getChildAt(0)).getText().toString();
+
+            Intent intent = new Intent(getApplicationContext(), CheckUpdateIntentService.class); // ReceivedActivityを呼び出すインテントを作成
+            intent.putExtra("checkDataArray",clDataArray);
+            PendingIntent sender = PendingIntent.getService(SettingActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT); // ブロードキャストを投げるPendingIntentの作成
 /*
         Calendar calendar = Calendar.getInstance(); // Calendar取得
         calendar.setTimeInMillis(System.currentTimeMillis()); // 現在時刻を取得
         calendar.add(Calendar.SECOND, 10); // 現時刻より15秒後を設定
 */
-        String[] timeStrs = checkTimeText.getText().toString().split(":");
-        int hour = Integer.parseInt(timeStrs[0]);
-        int minuite = Integer.parseInt(timeStrs[1]);
+            String[] timeStrs = timeStr.split(":");
+            int hour = Integer.parseInt(timeStrs[0]);
+            int minuite = Integer.parseInt(timeStrs[1]);
 
-        // 日本(+9)以外のタイムゾーンを使う時はここを変える
-        TimeZone tz = TimeZone.getTimeZone("Asia/Tokyo");
+            // 日本(+9)以外のタイムゾーンを使う時はここを変える
+            TimeZone tz = TimeZone.getTimeZone("Asia/Tokyo");
 
-        //今日の目標時刻のカレンダーインスタンス作成
-        Calendar cal_target = Calendar.getInstance();
-        cal_target.setTimeZone(tz);
-        cal_target.set(Calendar.HOUR_OF_DAY, hour);
-        cal_target.set(Calendar.MINUTE, minuite);
-        cal_target.set(Calendar.SECOND, 0);
+            //今日の目標時刻のカレンダーインスタンス作成
+            Calendar cal_target = Calendar.getInstance();
+            cal_target.setTimeZone(tz);
+            cal_target.set(Calendar.HOUR_OF_DAY, hour);
+            cal_target.set(Calendar.MINUTE, minuite);
+            cal_target.set(Calendar.SECOND, 0);
 
-        //現在時刻のカレンダーインスタンス作成
-        Calendar cal_now = Calendar.getInstance();
-        cal_now.setTimeZone(tz);
+            //現在時刻のカレンダーインスタンス作成
+            Calendar cal_now = Calendar.getInstance();
+            cal_now.setTimeZone(tz);
 
-        //ミリ秒取得
-        long target_ms = cal_target.getTimeInMillis();
-        long now_ms = cal_now.getTimeInMillis();
+            //ミリ秒取得
+            long target_ms = cal_target.getTimeInMillis();
+            long now_ms = cal_now.getTimeInMillis();
 
-        AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE); // AlramManager取得
+            AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE); // AlramManager取得
 
-        //今日ならそのまま指定
-        if (target_ms <= now_ms) {
-            cal_target.add(Calendar.DAY_OF_MONTH, 1);
-            target_ms = cal_target.getTimeInMillis();
+            //今日ならそのまま指定
+            if (target_ms <= now_ms) {
+                cal_target.add(Calendar.DAY_OF_MONTH, 1);
+                target_ms = cal_target.getTimeInMillis();
+            }
+            am.setRepeating(AlarmManager.RTC_WAKEUP,target_ms,AlarmManager.INTERVAL_DAY,sender);
+
         }
-        am.setRepeating(AlarmManager.RTC_WAKEUP,target_ms,AlarmManager.INTERVAL_DAY,sender);
-
-        //AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE); // AlramManager取得
-        //am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender); // AlramManagerにPendingIntentを登録
     }
 
     private void saveData()
@@ -246,7 +358,16 @@ public class SettingActivity extends AppCompatActivity
         SharedPreferences.Editor e = shPref.edit();
         e.putBoolean("PreKey_IsNotification", isNotificationSwitch.isChecked());
         //e.putInt("PreKey_SpinnerSelection", intervalSpinner.getSelectedItemPosition());
-        e.putString("PreKey_CheckTimeString", checkTimeText.getText().toString());
+        //e.putString("PreKey_CheckTimeString", checkTimeText.getText().toString());
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0 ; i < checkTimeTextLinerLayout.getChildCount() ; i++)
+        {
+            LinearLayout ll = (LinearLayout) checkTimeTextLinerLayout.getChildAt(i);
+            sb.append(((TextView)ll.getChildAt(0)).getText().toString());
+            sb.append(",");
+        }
+        e.putString("PreKey_CheckTimeString", sb.toString());
+        e.putInt("PreKey_CheckUpdateServiceCount", checkTimeTextLinerLayout.getChildCount());
         e.apply();
 
         for(CheckListData clData:clDataArray)

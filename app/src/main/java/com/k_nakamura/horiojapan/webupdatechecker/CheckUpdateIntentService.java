@@ -23,6 +23,8 @@ public class CheckUpdateIntentService extends IntentService {
     final static String TAG = "CheckUpdateIntentService";
     final static int NOTIFICATION_CHECKUPDATE_ID = 1;
 
+    public static int CHECKUPDATESERVICE_COUNT = 0;
+
     private ArrayList<CheckListData> clDataArray;
 
     public CheckUpdateIntentService()
